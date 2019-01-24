@@ -284,7 +284,7 @@ end
 -- This helps me reuse functions like SingleLiteral.
 -- `Next` is a stateful function which advances the XML parser.
 	-- It returns `Value, Type`, where `Type` is "Tag" or "Literal" and Value is a string of whatever the parser is currently on,
-	-- excluding the signs `<>` surrounding signs.
+	-- excluding the signs `<>` surrounding tags.
 local TypeProcess = setmetatable({
 	ProtectedString = function(Next, Closer)
 		local Value, Type = SingleLiteral(Next, Closer)
