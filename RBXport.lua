@@ -249,6 +249,7 @@ local function ExpectSpaceSeparatedLiterals(DataType)
 		for Num in Value:gmatch("%S+") do
 			table.insert(Parameters, Num)
 		end
+
 		assertTag(Closer, Next())
 		return DataType .. ".new(" .. table.concat(Parameters, ", ") .. ")"
 	end
@@ -257,17 +258,19 @@ end
 local TypeProcess = setmetatable({
 	ProtectedString = function(Next, Closer)
 		local Value, Type = Next()
-		if Type == "Tag" then
-			if Closer == Value then
-				return nil
+
+		if Type == "Literal" then
+			assertTag(Closer, Next())
+			Value = Value:gsub(UnescapableString, HTMLUnescapes)
+		else
+			if Value == Closer then
+				Value = nil
 			else
 				assertTag(Closer, Next())
-				return Value
 			end
-		elseif Type == "Literal" then
-			Value = Value:gsub(UnescapableString, HTMLUnescapes)
-			return Value
 		end
+
+		return Value
 	end;
 
 	bool = SingleLiteral;
