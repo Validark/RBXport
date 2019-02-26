@@ -284,7 +284,7 @@ end
 -- This helps me reuse functions like SingleLiteral.
 -- `Next` is a stateful function which advances the XML parser.
 	-- It returns `Value, Type`, where `Type` is "Tag" or "Literal" and Value is a string of whatever the parser is currently on,
-	-- excluding the signs `<>` surrounding tags.
+	-- excluding the signs `<>` surrounding signs.
 local TypeProcess = setmetatable({
 	ProtectedString = function(Next, Closer)
 		local Value, Type = SingleLiteral(Next, Closer)
@@ -336,8 +336,9 @@ local TypeProcess = setmetatable({
 	end;
 
 	Vector3 = ExpectFields("Vector3", {"X", "Y", "Z"});
+	Color3 = ExpectFields("Color3", {"R", "G", "B"});
 
-	Color3 = function(Next)
+	Color3uint8 = function(Next, Closer)
 		local B = tonumber((Next()))
 		local _ = (B - B % 0x01000000) / 0x01000000
 		B = B - _ * 0x01000000
@@ -345,7 +346,7 @@ local TypeProcess = setmetatable({
 		B = B - R * 0x00010000
 		local G = (B - B % 0x00000100) / 0x00000100
 		B = B - G * 0x00000100
-		assertTag("/Color3", Next())
+		assertTag(Closer, Next())
 		return "Color3.fromRGB(" .. R .. ", " .. G .. ", " .. B .. ")"
 	end;
 
